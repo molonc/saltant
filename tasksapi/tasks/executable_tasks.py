@@ -101,14 +101,26 @@ def run_executable_command(
 
             # Clean up the temp file after we're done with it
             temp_files_to_clean_up += [json_file_path]
+
         elif args_dict:
-            # Pass in JSON args directly
-            cmd_list += [json.dumps(args_dict)]
+            if 'jira' in args_dict:
+                cmd_list += [
+                    args_dict['jira'],
+                    args_dict['version'],
+                    args_dict['analysis_type'],
+                    "--update",
+                    "--saltant",
+                ]
+
+            else:
+                # Pass in JSON args directly
+                cmd_list += [json.dumps(args_dict)]
 
     # Run the command
     try:
         with open(host_stdout_log_path, "w") as f_stdout:
             with open(host_stderr_log_path, "w") as f_stderr:
+                print("cmd: {}".format(cmd_list), file=f_stdout)
                 # Run command
                 subprocess.check_call(
                     args=cmd_list,
