@@ -15,9 +15,7 @@ import subprocess
 from .utils import create_local_directory
 
 
-def run_executable_command(
-    uuid, command_to_run, env_vars_list, args_dict, json_file_option
-):
+def run_executable_command(uuid, command_to_run, env_vars_list, args_dict, json_file_option):
     """Launch an executable within a Docker container.
 
     Args:
@@ -44,22 +42,15 @@ def run_executable_command(
     create_local_directory(host_logs_path)
 
     # Build paths to stdout and stdin files
-    host_stdout_log_path = os.path.join(
-        host_logs_path, uuid + "-" + "stdout.txt"
-    )
+    host_stdout_log_path = os.path.join(host_logs_path, uuid + "-" + "stdout.txt")
 
-    host_stderr_log_path = os.path.join(
-        host_logs_path, uuid + "-" + "stderr.txt"
-    )
+    host_stderr_log_path = os.path.join(host_logs_path, uuid + "-" + "stderr.txt")
 
     # Consume necessary environment variables
     try:
         environment = {key: os.environ[key] for key in env_vars_list}
     except KeyError as e:
-        raise KeyError(
-            "Environment variable %s not present in the worker's environment!"
-            % e
-        )
+        raise KeyError("Environment variable %s not present in the worker's environment!" % e)
 
     # Also pass along the job's UUID
     environment["JOB_UUID"] = uuid
@@ -90,9 +81,7 @@ def run_executable_command(
         if json_file_option:
             # Write the the JSON args to a file, and then pass them
             # along to the command after the flag
-            json_file_path = os.path.join(
-                os.environ["WORKER_TEMP_DIRECTORY"], uuid + "_args.json"
-            )
+            json_file_path = os.path.join(os.environ["WORKER_TEMP_DIRECTORY"], uuid + "_args.json")
 
             with open(json_file_path, "w") as f:
                 print(json.dumps(args_dict), file=f)
@@ -107,10 +96,15 @@ def run_executable_command(
                 cmd_list += [
                     args_dict['jira'],
                     args_dict['version'],
+                    args_dict['library_id'],
+                    args_dict['aligner'],
                     args_dict['analysis_type'],
                     "--update",
                     "--saltant",
+                    "--skip_missing",
                 ]
+                if args_dict['override_contamination']:
+                    cmd_list += ['--override_contamination']
 
             else:
                 # Pass in JSON args directly

@@ -78,6 +78,10 @@ def run_task(
         NotImplementedError: An unsupported container type was passed
             in.
     """
+    
+    print("Task class {}".format(task_class))
+    print("UUID {} \nCOMMAND {}".format(uuid, command_to_run))
+    print("ARGS {}".format(args_dict))
     # Determine which class of task to run
     if task_class == CONTAINER_TASK:
         # Unpack some variables
