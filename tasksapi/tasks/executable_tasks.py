@@ -94,17 +94,11 @@ def run_executable_command(uuid, command_to_run, env_vars_list, args_dict, json_
         elif args_dict:
             if 'jira' in args_dict:
                 cmd_list += [
-                    args_dict['jira'],
-                    args_dict['version'],
-                    args_dict['library_id'],
-                    args_dict['aligner'],
-                    args_dict['analysis_type'],
+                    args_dict['analysis_id'],
                     "--update",
                     "--saltant",
                     "--skip_missing",
                 ]
-                if args_dict['override_contamination']:
-                    cmd_list += ['--override_contamination']
 
             else:
                 # Pass in JSON args directly
