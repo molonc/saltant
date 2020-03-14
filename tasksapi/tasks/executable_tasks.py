@@ -94,8 +94,7 @@ def run_executable_command(uuid, command_to_run, env_vars_list, args_dict, json_
         elif args_dict:
             if 'jira' in args_dict:
                 cmd_list += [
-                    args_dict['analysis_id'],
-                    "--update",
+                    str(args_dict['analysis_id']),
                     "--saltant",
                     "--skip_missing",
                 ]
