@@ -10,9 +10,13 @@ from __future__ import division
 from __future__ import print_function
 import json
 import os
+import git
 import shlex
 import subprocess
 from .utils import create_local_directory
+
+GIT_REPO = git.Repo(os.getcwd(), search_parent_directories=True)
+GIT_ROOT = GIT_REPO.git.rev_parse("--show-toplevel")
 
 
 def run_executable_command(uuid, command_to_run, env_vars_list, args_dict, json_file_option):
@@ -91,13 +95,45 @@ def run_executable_command(uuid, command_to_run, env_vars_list, args_dict, json_
             # Clean up the temp file after we're done with it
             temp_files_to_clean_up += [json_file_path]
 
-        elif args_dict:
+        else:
             if 'jira' in args_dict:
                 cmd_list += [
                     str(args_dict['analysis_id']),
                     "--saltant",
-                    "--skip_missing",
                 ]
+
+                if 'update' in args_dict:
+                    cmd_list += ["--update"]
+
+                if 'skip_missing' in args_dict:
+                    cmd_list += ["--skip_missing"]
+
+                if 'rerun' in args_dict:
+                    # remove pipeline dir
+                    subprocess.check_call([
+                        'sudo',
+                        'rm',
+                        '-rf',
+                        os.path.join(
+                            GIT_ROOT,
+                            'singlecelllogs',
+                            'pipeline',
+                            f"analysis_{args_dict['analysis_id']}",
+                        ),
+                    ])
+
+                    # remove temp dir
+                    subprocess.check_call([
+                        'sudo',
+                        'rm',
+                        '-rf',
+                        os.path.join(
+                            GIT_ROOT,
+                            'singlecelltemp',
+                            'temp',
+                            f"analysis_{args_dict['analysis_id']}",
+                        ),
+                    ])
 
             else:
                 # Pass in JSON args directly
