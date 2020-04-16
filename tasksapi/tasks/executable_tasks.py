@@ -106,12 +106,17 @@ def run_executable_command(uuid, command_to_run, env_vars_list, args_dict, json_
                     "--saltant",
                 ]
 
+                # check if update in args
                 if 'update' in args_dict:
+                    # add update flag
                     cmd_list += ["--update"]
 
+                # check if skip_missing in args
                 if 'skip_missing' in args_dict:
+                    # add skip_missing flag
                     cmd_list += ["--skip_missing"]
 
+                # check if rerun in args
                 if 'rerun' in args_dict:
                     # remove pipeline dir
                     subprocess.check_call([
