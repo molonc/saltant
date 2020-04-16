@@ -96,6 +96,10 @@ def run_executable_command(uuid, command_to_run, env_vars_list, args_dict, json_
             temp_files_to_clean_up += [json_file_path]
 
         else:
+            # check if jira in args
+            # this determines if task is to run analysis
+            # and adds args to command such that cmd is
+            # compatiable with click
             if 'jira' in args_dict:
                 cmd_list += [
                     str(args_dict['analysis_id']),
