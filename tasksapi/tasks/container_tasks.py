@@ -158,7 +158,7 @@ def run_singularity_container_command(
             singularity_image = client.pull(
                 image=container_image,
                 pull_folder=os.environ["WORKER_SINGULARITY_IMAGES_DIRECTORY"],
-                name_by_commit=True,
+                # name_by_commit=True,
             )
 
             break
