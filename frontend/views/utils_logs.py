@@ -117,3 +117,5 @@ def get_azure_logs_for_executable_task_instance(job_uuid):
     # Update the key names
     these_logs["stdout"] = these_logs.pop(job_uuid + "-" + "stdout.txt")
     these_logs["stderr"] = these_logs.pop(job_uuid + "-" + "stderr.txt")
+
+    return these_logs
