@@ -16,8 +16,6 @@ from .mixins import (
 )
 from .utils import get_context_data_for_chartjs
 from .utils_logs import (
-    get_s3_logs_for_task_instance,
-    get_s3_logs_for_executable_task_instance,
     get_azure_logs_for_task_instance,
     get_azure_logs_for_executable_task_instance
 )
@@ -62,7 +60,6 @@ class BaseTaskInstanceDetail(LoginRequiredMixin, DetailView):
     def get_logs(self):
         """Get the logs for the task instance."""
         return get_azure_logs_for_task_instance(str(self.get_object().uuid))
-        # return get_s3_logs_for_task_instance(str(self.get_object().uuid))
 
 
 class BaseTaskInstanceRename(LoginRequiredMixin, UpdateView):
@@ -201,9 +198,6 @@ class ExecutableTaskInstanceDetail(BaseTaskInstanceDetail):
 
     def get_logs(self):
         """Get the logs for the task instance."""
-        # return get_s3_logs_for_executable_task_instance(
-        #     str(self.get_object().uuid)
-        # )
         return get_azure_logs_for_executable_task_instance(
             str(self.get_object().uuid)
         )
