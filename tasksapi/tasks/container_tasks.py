@@ -23,6 +23,21 @@ class SingularityPullFailure(Exception):
     pass
 
 
+def copy_logs_to_azure_storage(host_logs_path, uuid):
+    blob_service_client = BlobServiceClient(
+        account_url="https://"+os.environ["AZURE_STORAGE_ACCOUNT_NAME"]+".blob.core.windows.net/", credential=os.environ["AZURE_STORAGE_ACCOUNT_KEY"])
+    log_files = os.listdir(host_logs_path)
+    print("Coying log files from " + host_logs_path + " to " + "https://" +
+          os.environ["AZURE_STORAGE_ACCOUNT_NAME"]+".blob.core.windows.net/" + os.environ["AZURE_LOGS_CONTAINER_NAME"] + "/" + uuid)
+    for log_file in log_files:
+        local_source_file = os.path.join(host_logs_path, log_file)
+        dest_blob = os.path.join(uuid, log_file)
+        blob_client = blob_service_client.get_blob_client(
+            container=os.environ["AZURE_LOGS_CONTAINER_NAME"], blob=dest_blob)
+        with open(file=local_source_file, mode="rb") as data:
+            blob_client.upload_blob(data)
+
+
 def run_docker_container_command(
     uuid,
     container_image,
@@ -108,6 +123,9 @@ def run_docker_container_command(
         environment=environment,
         volumes=volumes_dict,
     )
+
+    # Copy log files to Azure Storage account
+    copy_logs_to_azure_storage(host_logs_path, uuid)
 
 
 def run_singularity_container_command(
@@ -249,16 +267,4 @@ def run_singularity_container_command(
         pass
 
     # Copy log files to Azure Storage account
-
-    blob_service_client = BlobServiceClient(
-        account_url="https://"+os.environ["AZURE_STORAGE_ACCOUNT_NAME"]+".blob.core.windows.net/", credential=os.environ["AZURE_STORAGE_ACCOUNT_KEY"])
-    log_files = os.listdir(host_logs_path)
-    print("Coying log files from " + host_logs_path + " to " + "https://" +
-          os.environ["AZURE_STORAGE_ACCOUNT_NAME"]+".blob.core.windows.net/" + os.environ["AZURE_LOGS_CONTAINER_NAME"] + "/" + uuid)
-    for log_file in log_files:
-        local_source_file = os.path.join(host_logs_path, log_file)
-        dest_blob = os.path.join(uuid, log_file)
-        blob_client = blob_service_client.get_blob_client(
-            container=os.environ["AZURE_LOGS_CONTAINER_NAME"], blob=dest_blob)
-        with open(file=local_source_file, mode="rb") as data:
-            blob_client.upload_blob(data)
+    copy_logs_to_azure_storage(host_logs_path, uuid)
